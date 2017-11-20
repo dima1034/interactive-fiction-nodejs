@@ -17,19 +17,23 @@ process.env.DEBUG = 'actions-on-google:*';
 const { DialogflowApp } = require('actions-on-google');
 const express = require('express');
 const bodyParser = require('body-parser');
-const { loadData, runnerFactory } = require('./zutils');
 
 const cmd = false;
 const inputs = [];
 
-// Example story: http://ifdb.tads.org/viewgame?id=mohwfk47yjzii14w
-const story = 'http://mirror.ifarchive.org/if-archive/games/zcode/LostPig.z8';
-
 // [START YourAction]
-// Preload the story data before first action request
-loadData(story, (data) => {
-	console.log('preloaded data: ' + story);
-});
+
+const questions = [
+	"Tell me your fullname",
+	"Tell me your postal zip/code",
+	"Country",
+	"City",
+	"Birthday",
+	"Street Address",
+	"University",
+	"Degree",
+	"Field of study",
+];
 
 const expressApp = express();
 expressApp.set('port', (process.env.PORT || 8080));
@@ -46,10 +50,16 @@ expressApp.post('/', (request, response) => {
 	const DIRECTION_INTENT = 'input.directions';
 	const DIRECTION_ARGUMENT = 'Directions';
 	const LOOK_INTENT = 'input.look';
+	const UserProvidesName_INTENT = 'input.pre_userprovidesname';
 
 	const welcomeIntent = (app) => {
 		console.log('welcomeIntent');
 		app.tell('Log: welcome intent');
+	};
+
+	const userProvidesNameIntent = (app) => {
+		console.log('nameIntent');
+		app.tell('Log: name intent');
 	};
 
 	const unknownIntent = (app) => {
@@ -81,6 +91,7 @@ expressApp.post('/', (request, response) => {
 	actionMap.set(UNKNOWN_INTENT, unknownIntent);
 	actionMap.set(DIRECTION_INTENT, directionsIntent);
 	actionMap.set(LOOK_INTENT, lookIntent);
+	actionMap.set(UserProvidesName_INTENT, userProvidesNameIntent);
 
 	const url = request.query.url;
 	if (url) {
