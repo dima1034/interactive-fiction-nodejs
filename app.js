@@ -52,14 +52,20 @@ expressApp.post('/', (request, response) => {
 	const LOOK_INTENT = 'input.look';
 	const UserProvidesName_INTENT = 'input.pre_userprovidesname';
 
+	const NO_INPUTS = ['I didn\'t hear that.', 
+	'If you\'re still there, please repeat that.', 
+	'See you next time.'];
+	const HELP = 'You can say things like go, inventory or examine. What do you want to do?';
+
 	const welcomeIntent = (app) => {
 		console.log('welcomeIntent');
 		app.tell('Log: welcome intent');
+		app.ask('Tell me your first name', NO_INPUTS);
 	};
 
 	const userProvidesNameIntent = (app) => {
 		console.log('nameIntent');
-		app.tell('Log: name intent');
+		app.tell('Log: name intent');		
 	};
 
 	const unknownIntent = (app) => {
