@@ -99,15 +99,7 @@ expressApp.post('/', (request, response) => {
 	actionMap.set(LOOK_INTENT, lookIntent);
 	actionMap.set(UserProvidesName_INTENT, userProvidesNameIntent);
 
-	const url = request.query.url;
-	if (url) {
-		loadData(url, (data) => {
-			console.log('custom data: ' + url);
-			app.handleRequest(actionMap);
-		}, true);
-	} else {
-		app.handleRequest(actionMap);
-	}
+	app.handleRequest(actionMap);	
 });
 // [END YourAction]
 
