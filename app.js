@@ -59,13 +59,13 @@ expressApp.post('/', (request, response) => {
 
 	const welcomeIntent = (app) => {
 		console.log('welcomeIntent');
-		app.tell('Log: welcome intent');
+		//app.tell('Log: welcome intent');
 		app.ask('Tell me your first name', NO_INPUTS);
 	};
 
 	const userProvidesNameIntent = (app) => {
 		console.log('nameIntent');
-		app.tell('Log: name intent');		
+		app.ask('Tell me your birthday', NO_INPUTS);		
 	};
 
 	const unknownIntent = (app) => {
