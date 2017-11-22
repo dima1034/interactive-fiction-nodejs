@@ -1,3 +1,5 @@
+///<reference path="node_modules/@types/actions-on-google/index.d.ts" />
+
 // Copyright 2017, SoftServe, Inc.
 // Licensed under the Apache License, Version 2.0 (the 'License');
 // you may not use this file except in compliance with the License.
@@ -11,29 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 'use strict';
 
 process.env.DEBUG = 'actions-on-google:*';
 const { DialogflowApp } = require('actions-on-google');
 const express = require('express');
 const bodyParser = require('body-parser');
+const constants = require('./constants');
+const handlers = require('./handlers');
 
 const cmd = false;
 const inputs = [];
 
 // [START YourAction]
-
-const questions = [
-	"Tell me your fullname",
-	"Tell me your postal zip/code",
-	"Country",
-	"City",
-	"Birthday",
-	"Street Address",
-	"University",
-	"Degree",
-	"Field of study",
-];
 
 const expressApp = express();
 expressApp.set('port', (process.env.PORT || 8080));
@@ -45,59 +38,19 @@ expressApp.post('/', (request, response) => {
 	console.log('Request headers: ' + JSON.stringify(request.headers));
 	console.log('Request body: ' + JSON.stringify(request.body));
 
-	const WELCOME_INTENT = 'input.welcome';
-	const UNKNOWN_INTENT = 'input.unknown';
-	const DIRECTION_INTENT = 'input.directions';
-	const DIRECTION_ARGUMENT = 'Directions';
-	const LOOK_INTENT = 'input.look';
-	const UserProvidesName_INTENT = 'input.pre_userprovidesname';
-
-	const NO_INPUTS = ['I didn\'t hear that.', 
-	'If you\'re still there, please repeat that.', 
-	'See you next time.'];
-	const HELP = 'You can say things like go, inventory or examine. What do you want to do?';
-
-	const welcomeIntent = (app) => {
-		console.log('welcomeIntent');
-		//app.tell('Log: welcome intent');
-		app.ask('Tell me your first name', NO_INPUTS);
-	};
-
-	const userProvidesNameIntent = (app) => {
-		console.log('nameIntent');
-		app.ask('Tell me your birthday', NO_INPUTS);		
-	};
-
-	const unknownIntent = (app) => {
-		console.log('unknownIntent: ' + app.getRawInput());
-		if (app.getRawInput() === 'quit') {
-			app.data.restore = null;
-			app.tell('Goodbye!');
-		} else {
-			app.mappedInput = app.getRawInput();
-			app.tell('Log: unknown intent');
-		}
-	};
-
-	const directionsIntent = (app) => {
-		const direction = app.getArgument(DIRECTION_ARGUMENT);
-		console.log('directionsIntent: ' + direction);
-		app.mappedInput = 'go ' + direction;
-		app.tell('Log: direction intent');
-	};
-
-	const lookIntent = (app) => {
-		console.log('lookIntent');
-		app.mappedInput = 'look';
-		app.tell('Log: direction intent');
-	};
-
 	const actionMap = new Map();
-	actionMap.set(WELCOME_INTENT, welcomeIntent);
-	actionMap.set(UNKNOWN_INTENT, unknownIntent);
-	actionMap.set(DIRECTION_INTENT, directionsIntent);
-	actionMap.set(LOOK_INTENT, lookIntent);
-	actionMap.set(UserProvidesName_INTENT, userProvidesNameIntent);
+	actionMap.set(constants.WELCOME_INTENT, handlers.welcomeIntent.bind(null, app));
+	actionMap.set(constants.UNKNOWN_INTENT, handlers.unknownIntent.bind(null, app));
+	actionMap.set(constants.DIRECTION_INTENT, handlers.directionsIntent.bind(null, app));
+	actionMap.set(constants.LOOK_INTENT, handlers.lookIntent.bind(null, app));
+	//custom
+	actionMap.set(constants.NAME_INTENT, handlers.nameIntent.bind(null, app));
+	actionMap.set(constants.EDUCATION_INTENT, handlers.educationIntent.bind(null, app));
+	actionMap.set(constants.DROPDOWN_INTENT, handlers.dropdownIntent.bind(null, app));
+	actionMap.set(constants.RATE_INTENT, handlers.rateIntent.bind(null, app));
+	actionMap.set(constants.ADDRESS_INTENT, handlers.addressIntent.bind(null, app));
+	actionMap.set(constants.TEXTBOX_INTENT, handlers.textboxIntent.bind(null, app));
+	actionMap.set(constants.INTRO_INTENT, handlers.intro.bind(null, app));
 
 	app.handleRequest(actionMap);	
 });

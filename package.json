@@ -34,6 +34,7 @@
     "request": "^2.79.0"
   },
   "devDependencies": {
+    "@types/actions-on-google": "^1.6.0",
     "semistandard": "^9.1.0"
   }
 }
